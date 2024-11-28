@@ -37,15 +37,8 @@ def call_api(text, type="gpt"):
 # Application Streamlit
 def main():
     # Configurer la sidebar
-    with st.sidebar:
-        # logo_path = "assets/logo.png"
-        # st.image(logo_path, caption="", use_column_width=True)
-        st.title("Extraction CV")
-        st.write("Cette application permet d'extraire automatiquement les informations d'un CV sous format structuré.")
-
     # Titre principal de l'application
-    st.title("Extraction Automatisée d'Informations Structurées depuis un CV")
-    st.write("Téléversez un fichier PDF contenant un CV pour extraire ses informations.")
+    st.title("Resume Extractor")
 
     # Uploader de fichier
     uploaded_file = st.file_uploader("Téléverser un fichier PDF", type=["pdf"])
@@ -55,19 +48,23 @@ def main():
         try:
             # Extraire le texte du fichier PDF
             text = extract_text_from_binary(uploaded_file.read())
-            st.write("Texte extrait avec succès. Envoi à l'API Flask en cours...")
+            st.write("Texte extrait avec succès. Extraction en cours...")
 
             # Appeler l'API Flask
             yaml_output_gpt = call_api(text)
-            yaml_output_mistral = call_api(text, "mistral")
+            # yaml_output_mistral = call_api(text, "mistral")
 
             # Afficher les résultats avec GPT
             st.subheader("Résultats GPT (YAML)")
             st.text(yaml_output_gpt)
 
             # Afficher les résultats avec Mistral
-            st.subheader("Résultats Mistral")
-            st.text(yaml_output_mistral)
+            # st.subheader("Résultats Mistral")
+            # st.text(yaml_output_mistral)
+
+            # download button for yaml_output_gpt
+            st.download_button("Télécharger le résultat", yaml_output_gpt, "yaml_output_gpt.yaml", key="download-button")
+
 
         except Exception as e:
             st.error(f"Une erreur est survenue : {e}")
