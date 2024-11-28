@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app/api
+    command: python api.py
+    ports:
+      - "5002:5002"
+    restart: always
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /app/frontend
+    command: streamlit run app.py --server.port 8501
+    ports:
+      - "8501:8501"
+    depends_on:
+      - backend
+    restart: always

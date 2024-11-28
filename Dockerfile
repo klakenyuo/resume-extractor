@@ -1,23 +1,16 @@
-# Utiliser une image Python légère comme base
+# Use an official Python runtime as a parent image
 FROM python:3.9-slim
 
-# Définir le répertoire de travail dans le conteneur
+# Set the working directory
 WORKDIR /app
 
-# Copier tout le contenu du projet dans le conteneur
-COPY . /app
+# Copy project files
+COPY api /app/api
+COPY app /app/app
+COPY requirements.txt /app/requirements.txt
+COPY .env /app/.env
+# Install dependencies for both services
+RUN pip install --no-cache-dir -r /app/requirements.txt
 
-# Installer les dépendances
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Exposer les ports nécessaires (API Flask et Streamlit)
-EXPOSE 5001 8501
-
-# Installer supervisord pour gérer plusieurs processus
-RUN pip install supervisor
-
-# Copier le fichier de configuration supervisord
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Commande d'exécution : lancer supervisord
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Default command (run Flask and Streamlit together)
+CMD ["sh", "-c", "cd /app/api && python api.py & cd /app/app && streamlit run app.py --server.port 8501 --server.enableCORS false --server.enableXsrfProtection false"]
